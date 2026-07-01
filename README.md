@@ -174,6 +174,13 @@ the wrapper against the new build.
 - Not affiliated with or endorsed by Anthropic. Uses a documented-by-behavior
   env var; could change in a future build.
 
+## Author
+
+Made by **scadastrangelove** — [blog](https://scadastrangelove.blogspot.com/) ·
+[scadastrangelove@gmail.com](mailto:scadastrangelove@gmail.com).
+
+Bug reports and PRs welcome.
+
 ## License
 
 MIT.
