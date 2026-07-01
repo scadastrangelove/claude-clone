@@ -58,7 +58,7 @@ relevant account's folder over and the sessions come back.
 I packaged it into a small repo — **claude-clone** — with a one-command deploy:
 
 ```bash
-git clone https://github.com/<you>/claude-clone && cd claude-clone
+git clone https://github.com/scadastrangelove/claude-clone && cd claude-clone
 chmod +x install.sh sync-sessions.sh
 ./install.sh -n "Claude Work" -b W --copy-settings --copy-sessions
 ```

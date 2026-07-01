@@ -59,7 +59,7 @@ sample "Claude Work" 1 | grep 'Code Type'
 Я собрал это в маленький репозиторий **claude-clone** с деплоем в одну команду:
 
 ```bash
-git clone https://github.com/<you>/claude-clone && cd claude-clone
+git clone https://github.com/scadastrangelove/claude-clone && cd claude-clone
 chmod +x install.sh sync-sessions.sh
 ./install.sh -n "Claude Work" -b W --copy-settings --copy-sessions
 ```
