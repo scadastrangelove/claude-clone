@@ -53,18 +53,19 @@ relevant account's folder over and the sessions come back.
 
 ## How to install
 
-I packaged it into a small repo with a one-command deploy:
+I packaged it into a small repo — **claude-clone** — with a one-command deploy:
 
 ```bash
-git clone <repo> && cd <repo>
+git clone https://github.com/<you>/claude-clone && cd claude-clone
 chmod +x install.sh sync-sessions.sh
-./install.sh -n "Claude Work" -b W --copy-settings
+./install.sh -n "Claude Work" -b W --copy-settings --copy-sessions
 ```
 
 The script builds the `.app` wrapper, an isolated profile, and a **distinct icon**
 (recolored background + a letter badge in the corner) so the two Claudes don't
-blur together in the Dock. Then launch "Claude Work", sign in with the second
-account, done.
+blur together in the Dock. `--copy-sessions` brings over your existing Claude Code
+sessions (or starts fresh if there are none). Then launch "Claude Work", sign in
+with the second account, done.
 
 Deliberately **not** copied: login tokens, cookies, local storage — the whole
 point is a different account. If you use a macOS **system** proxy, both instances

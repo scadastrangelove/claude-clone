@@ -12,6 +12,7 @@
 #   ./install.sh                       # defaults: name "Claude Work", badge "W"
 #   ./install.sh -n "Claude Alt" -b A  # custom app name + badge letter
 #   ./install.sh -n "Claude Work" --copy-settings   # also clone UI prefs
+#   ./install.sh -n "Claude Work" --copy-sessions   # bring over Claude Code sessions
 #
 # Options:
 #   -n NAME            App/instance name (default: "Claude Work")
@@ -20,6 +21,10 @@
 #   -s PATH            Source Claude.app (default: /Applications/Claude.app)
 #   --copy-settings    Copy claude_desktop_config.json (UI prefs) from the main
 #                      profile. Never copies login tokens / cookies.
+#   --copy-sessions    Copy your existing Claude Code session list from the main
+#                      profile (if any). Omit to start fresh. Transcripts are
+#                      shared either way — this only copies the per-profile index;
+#                      only the account you log into will display its sessions.
 #   -h, --help         Show this help
 #
 set -euo pipefail
@@ -29,6 +34,7 @@ BADGE=""
 HUE=150
 SRC_APP="/Applications/Claude.app"
 COPY_SETTINGS=0
+COPY_SESSIONS=0
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -37,7 +43,8 @@ while [[ $# -gt 0 ]]; do
     -H) HUE="$2"; shift 2;;
     -s) SRC_APP="$2"; shift 2;;
     --copy-settings) COPY_SETTINGS=1; shift;;
-    -h|--help) sed -n '2,30p' "$0"; exit 0;;
+    --copy-sessions) COPY_SESSIONS=1; shift;;
+    -h|--help) sed -n '2,35p' "$0"; exit 0;;
     *) echo "Unknown option: $1" >&2; exit 1;;
   esac
 done
@@ -114,6 +121,19 @@ fi
 if [[ "$COPY_SETTINGS" == "1" && -f "$MAIN_PROFILE/claude_desktop_config.json" ]]; then
   cp "$MAIN_PROFILE/claude_desktop_config.json" "$PROFILE/claude_desktop_config.json"
   echo "==> Settings : copied claude_desktop_config.json (prefs only)"
+fi
+
+# --- 3b. optional: bring over Claude Code session index --------------------
+if [[ "$COPY_SESSIONS" == "1" ]]; then
+  SRC_SESS="$MAIN_PROFILE/claude-code-sessions"
+  if [[ -d "$SRC_SESS" ]] && find "$SRC_SESS" -name '*.json' -print -quit | grep -q .; then
+    mkdir -p "$PROFILE/claude-code-sessions"
+    cp -R "$SRC_SESS/." "$PROFILE/claude-code-sessions/"
+    n=$(find "$PROFILE/claude-code-sessions" -name '*.json' | wc -l | tr -d ' ')
+    echo "==> Sessions : copied Claude Code session index ($n sessions)"
+  else
+    echo "==> Sessions : none found in main profile — starting fresh"
+  fi
 fi
 
 # --- 4. register + refresh icon caches -------------------------------------

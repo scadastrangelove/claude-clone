@@ -1,10 +1,12 @@
-# Two Claude Desktops, one Mac
+# claude-clone
 
 Run a **second, fully independent Claude Desktop** on macOS — a different account,
 its own login and history, a distinct Dock icon — side by side with your main one.
 
 No second download, no full app copy: it wraps the *same* signed binary and just
 points it at a separate profile.
+
+![Two Claude Desktop icons in the Dock](docs/demo.gif)
 
 ## Why it isn't trivial
 
@@ -34,13 +36,20 @@ Two extra gotchas this repo handles for you:
 ## Install
 
 ```bash
-git clone <this-repo> && cd <this-repo>
+git clone https://github.com/<you>/claude-clone && cd claude-clone
 chmod +x install.sh sync-sessions.sh
 ./install.sh -n "Claude Work" -b W --copy-settings
 ```
 
 Then launch **Claude Work** from Spotlight or `/Applications` and sign in with
 your second account. Drag it to the Dock to pin it.
+
+Want your existing Claude Code sessions in the new instance from the start? Add
+`--copy-sessions`:
+
+```bash
+./install.sh -n "Claude Work" -b W --copy-settings --copy-sessions
+```
 
 ### Options
 
@@ -51,6 +60,7 @@ your second account. Drag it to the Dock to pin it.
 | `-H HUE` | Hue shift (0–255) for the icon background | `150` |
 | `-s PATH` | Source `Claude.app` | `/Applications/Claude.app` |
 | `--copy-settings` | Clone UI prefs (`claude_desktop_config.json`) | off |
+| `--copy-sessions` | Copy your Claude Code session list if present, else start fresh | off (fresh) |
 
 The icon generator needs Pillow (`pip3 install Pillow`); without it you still get
 a working instance, just with the stock icon.
@@ -69,7 +79,10 @@ Your main install is never touched.
 Claude Code **transcripts** live globally in `~/.claude/projects` and are shared
 by every instance. But Claude Desktop keeps a **per-profile, per-account index**
 of them, so a fresh profile shows an empty Claude Code list even though the
-transcripts exist. Copy the index across:
+transcripts exist.
+
+You can pull the index in at install time with `--copy-sessions` (above), or any
+time afterwards with the standalone script:
 
 ```bash
 ./sync-sessions.sh \
@@ -79,7 +92,7 @@ transcripts exist. Copy the index across:
 
 Only the account you're logged into displays; other accounts' entries are inert.
 Restart the target app afterwards. Note: these lists **don't auto-sync** — re-run
-the script when you want to refresh.
+when you want to refresh.
 
 ## What is and isn't copied
 
@@ -96,6 +109,60 @@ the script when you want to refresh.
 rm -rf "/Applications/Claude Work.app"
 rm -rf "$HOME/Library/Application Support/Claude-work"   # deletes that profile's login/history
 ```
+
+## Troubleshooting
+
+**The second instance is slow / a CPU core sits near 100%.**
+It's running under Rosetta (translated x86_64). Check:
+
+```bash
+sample "Claude Work" 1 | grep 'Code Type'   # want ARM64, not "X86-64 (translated)"
+```
+
+Re-run `install.sh` (it forces arm64). If you launched it by hand, make sure the
+launcher uses `exec /usr/bin/arch -arm64 …`. Also confirm you didn't tick
+*"Open using Rosetta"* in Finder → Get Info on the app.
+
+**Clicking the new app just focuses my main Claude / it's the same account.**
+The profile isn't being isolated. Verify the running process actually has the env
+var set:
+
+```bash
+pid=$(pgrep -f "Claude.app/Contents/MacOS/Claude" | head -1)
+ps eww -p "$pid" | tr ' ' '\n' | grep CLAUDE_USER_DATA_DIR
+```
+
+If it's empty, you launched the main app, not the wrapper. Launch via
+`/Applications/<NAME>.app`. Don't use `open -n` on the original app — that shares
+the profile.
+
+**macOS says the app "cannot be opened" / is from an unidentified developer.**
+The wrapper is an unsigned local bundle. Right-click → **Open** once, or:
+
+```bash
+xattr -dr com.apple.quarantine "/Applications/Claude Work.app"
+```
+
+**The Dock still shows the old (identical) icon.**
+Icon caches are sticky. Re-run `install.sh`, or:
+
+```bash
+rm -rf "$(getconf DARWIN_USER_CACHE_DIR)/com.apple.iconservices.store"
+killall Dock
+```
+
+If it still lags, log out and back in.
+
+**"Icon: (no Python/Pillow)" — I got the stock icon.**
+Install Pillow and re-run: `pip3 install Pillow && ./install.sh -n "Claude Work"`.
+
+**Claude Code session list is empty.**
+Expected on a fresh profile — see [above](#bringing-over-claude-code-sessions).
+Run with `--copy-sessions`, or `sync-sessions.sh`, then **restart** the instance.
+
+**It broke after a Claude Desktop update.**
+An update can move or replace the binary. Just re-run `install.sh` to regenerate
+the wrapper against the new build.
 
 ## Notes & caveats
 
