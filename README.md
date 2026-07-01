@@ -36,7 +36,7 @@ Two extra gotchas this repo handles for you:
 ## Install
 
 ```bash
-git clone https://github.com/<you>/claude-clone && cd claude-clone
+git clone https://github.com/scadastrangelove/claude-clone && cd claude-clone
 chmod +x install.sh sync-sessions.sh
 ./install.sh -n "Claude Work" -b W --copy-settings
 ```
@@ -176,7 +176,8 @@ the wrapper against the new build.
 
 ## Author
 
-Made by **scadastrangelove** — [blog](https://scadastrangelove.blogspot.com/) ·
+Made by **Sergey Gordeychik** (scadastrangelove) —
+[blog](https://scadastrangelove.blogspot.com/) ·
 [scadastrangelove@gmail.com](mailto:scadastrangelove@gmail.com).
 
 Bug reports and PRs welcome.

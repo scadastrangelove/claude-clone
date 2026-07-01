@@ -1,5 +1,7 @@
 # Two Claude Desktops on one Mac: a small, practical one
 
+*By Sergey Gordeychik*
+
 I usually write about heavier stuff — decision-support systems, the coming
 crisis in how professions reproduce themselves, and assorted AI dread. Today,
 something short and useful: how to run **two Claude Desktop apps on one macOS**,
@@ -74,8 +76,9 @@ inherit it automatically (Chromium reads system settings).
 ## Result
 
 Five minutes of setup and two independent Claudes live side by side — personal
-and work, each with its own history, its own icon, and proper native speed. Repo
-with the scripts is linked below.
+and work, each with its own history, its own icon, and proper native speed.
+
+**Scripts / repo:** https://github.com/scadastrangelove/claude-clone
 
 *P.S. This is an unofficial trick based on app behavior (the
 `CLAUDE_USER_DATA_DIR` env var) and may change in future versions. As of writing
